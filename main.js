@@ -32,17 +32,22 @@ const glados = async () => {
 
 const notify = async (contents) => {
   const token = process.env.NOTIFY
-  if (!token || !contents) return
-  await fetch(`https://www.pushplus.plus/send`, {
-    method: 'POST',
-    headers: { 'content-type': 'application/json' },
-    body: JSON.stringify({
-      token,
-      title: contents[0],
-      content: contents.join('<br>'),
-      template: 'markdown',
-    }),
-  })
+  if (!token || !contents) {
+    try {
+      return await fetch(`https://www.pushplus.plus/send`, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({
+          token,
+          title: contents[0],
+          content: contents.join('<br>'),
+          template: 'markdown',
+        }),
+      })
+    } catch (e) {
+      console.error('调用 pushplus 通知失败')
+    }
+  }
 }
 
 const main = async () => {
