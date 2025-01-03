@@ -32,7 +32,7 @@ const glados = async () => {
 
 const notify = async (contents) => {
   const token = process.env.NOTIFY
-  if (!token || !contents) {
+  if (token && contents) {
     try {
       return await fetch(`https://www.pushplus.plus/send`, {
         method: 'POST',
