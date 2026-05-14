@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
   push:
   schedule:
-    - cron: 13 0,12 * * * # UTC 时间 00:13、12:13 执行
+    - cron: 14 0,12 * * * # UTC 时间 00:14、12:14 执行
 
 jobs:
   run:
