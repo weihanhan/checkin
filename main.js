@@ -15,18 +15,37 @@ const glados = async () => {
       headers: { ...headers, 'content-type': 'application/json' },
       body: JSON.stringify({ token: domain }),
     }).then((r) => r.json())
+
+    // 签到接口判断：code 小于 0 视为失败（如 -2 表示无权限/Cookie 失效）
+    if (checkin.code === undefined || checkin.code < 0) {
+      return [
+        '签到失败',
+        `状态码: ${checkin.code}`,
+        `提示信息: ${checkin.message}`,
+        `<${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}>`,
+      ]
+    }
+
+    // 签到成功后获取账户状态
     const status = await fetch(`https://${domain}/api/user/status`, {
       method: 'GET',
       headers,
     }).then((r) => r.json())
+
+    // 安全解析剩余天数（防御性取整）
+    const leftDays = status?.data?.leftDays !== undefined
+      ? Math.floor(Number(status.data.leftDays))
+      : '未知'
+
     return [
-      'Checkin OK',
-      `${checkin.message}`,
-      `Left Days ${Number(status.data.leftDays)}`,
+      '签到成功',
+      `状态码: ${checkin.code}`,
+      `提示信息: ${checkin.message}`,
+      `剩余 ${leftDays} 天`,
     ]
   } catch (error) {
     return [
-      'Checkin Error',
+      '签到异常',
       `${error}`,
       `<${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}>`,
     ]
